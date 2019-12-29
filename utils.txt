@@ -1,0 +1,1 @@
+docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=ProductApi1!@' -p 1445:1433 -d ba266fae5320
