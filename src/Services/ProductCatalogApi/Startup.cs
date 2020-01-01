@@ -34,7 +34,7 @@ namespace ProductCatalogApi
             string database = Configuration["DatabaseName"];
             string user = Configuration["DatabaseUser"];
             string password = Configuration["DatabasePassword"];
-            string connectionString = $"Server={0};Database={1};User={2};Password={3};";
+            string connectionString = $"Server={server};Database={database};User={user};Password={password};";
 
             services.AddDbContext<CatalogContext>(opt =>
                 // opt.UseSqlServer(Configuration["ConnectionString"])
@@ -43,6 +43,7 @@ namespace ProductCatalogApi
 
             services.AddControllers();
 
+            //TODO: check why it does not work
             //services.AddSwaggerGen(c =>
             //{
             //    c.DescribeAllEnumsAsStrings();

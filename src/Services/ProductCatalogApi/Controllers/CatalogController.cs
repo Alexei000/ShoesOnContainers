@@ -77,7 +77,7 @@ namespace ProductCatalogApi.Controllers
 
             itemsOnPage = ChangeUrlPlaceholder(itemsOnPage).ToList();
             var model = new PaginatedItemsViewModel<CatalogItem>(pageSize, pageIndex, totalItems, itemsOnPage);
-            return Ok(itemsOnPage);
+            return Ok(model);
         }
 
         [HttpGet("[action]/withname/{name:minlength(1)}")]
@@ -95,7 +95,7 @@ namespace ProductCatalogApi.Controllers
 
             itemsOnPage = ChangeUrlPlaceholder(itemsOnPage).ToList();
             var model = new PaginatedItemsViewModel<CatalogItem>(pageSize, pageIndex, totalItems, itemsOnPage);
-            return Ok(itemsOnPage);
+            return Ok(model);
         }
 
         [HttpGet("[action]/type/{catalogTypeId}/brand/{catalogBrandId}")]
@@ -115,7 +115,7 @@ namespace ProductCatalogApi.Controllers
 
             itemsOnPage = ChangeUrlPlaceholder(itemsOnPage).ToList();
             var model = new PaginatedItemsViewModel<CatalogItem>(pageSize, pageIndex, totalItems, itemsOnPage);
-            return Ok(itemsOnPage);
+            return Ok(model);
         }
 
         [HttpPost("items")]
