@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,6 +32,36 @@ namespace ShoesOnContainers.Web.WebMvc
             services.AddScoped<IHttpClient, CustomHttpClient>();
             services.AddScoped<ICatalogService, CatalogService>();
 
+            var identityUrl = Configuration.GetValue<string>("IdentityUrl");
+            var callBackUrl = Configuration.GetValue<string>("CallBackUrl");
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+
+            })
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddOpenIdConnect(options =>
+            {
+                options.Authority = identityUrl.ToString();
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.SignedOutRedirectUri = callBackUrl.ToString();
+                options.ClientId = "mvc";
+                options.ClientSecret = "secret";
+                options.ResponseType = "code id_token";
+                options.SaveTokens = true;
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.RequireHttpsMetadata = false;
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
+                options.Scope.Add("offline_access");
+                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    NameClaimType = "name",
+                    RoleClaimType = "role"
+                };
+            });
+
             services.AddControllersWithViews();
         }
 
@@ -46,9 +78,10 @@ namespace ShoesOnContainers.Web.WebMvc
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseAuthentication();
             app.UseRouting();
 
             app.UseAuthorization();
