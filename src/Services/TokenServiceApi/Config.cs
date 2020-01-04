@@ -1,6 +1,7 @@
 ﻿using IdentityServer4;
 using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 
 namespace TokenServiceApi
@@ -10,10 +11,11 @@ namespace TokenServiceApi
         //public static Dictionary<string, string> ClientUrls { get; private set; }
         public static Dictionary<string, string> GetUrls(IConfiguration configuration)
         {
+            string mvcClient = configuration.GetValue<string>("MvcClient");
+            Console.WriteLine("MvcClient configuration value " + mvcClient);
+
             Dictionary<string, string> urls = new Dictionary<string, string>();
-
-            urls.Add("Mvc", configuration.GetValue<string>("MvcClient"));
-
+            urls.Add("Mvc", mvcClient);
             return urls;
 
         }
@@ -59,7 +61,7 @@ namespace TokenServiceApi
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.OfflineAccess,
                       //  IdentityServerConstants.StandardScopes.Email,
-                         "orders",
+                        "orders",
                         "basket",
 
                     }

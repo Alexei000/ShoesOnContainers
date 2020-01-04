@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using ShoesOnContainers.Web.WebMvc.Services;
 
 namespace ShoesOnContainers.Web.WebMvc
@@ -19,6 +20,8 @@ namespace ShoesOnContainers.Web.WebMvc
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            IdentityModelEventSource.ShowPII = true;
         }
 
         public IConfiguration Configuration { get; }
@@ -34,6 +37,10 @@ namespace ShoesOnContainers.Web.WebMvc
 
             var identityUrl = Configuration.GetValue<string>("IdentityUrl");
             var callBackUrl = Configuration.GetValue<string>("CallBackUrl");
+
+            Console.WriteLine("Identity Url = " + identityUrl);
+            Console.WriteLine("Callback Url = " + callBackUrl);
+
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;

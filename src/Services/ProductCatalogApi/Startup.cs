@@ -35,6 +35,7 @@ namespace ProductCatalogApi
             string user = Configuration["DatabaseUser"];
             string password = Configuration["DatabasePassword"];
             string connectionString = $"Server={server};Database={database};User={user};Password={password};";
+            Console.WriteLine("Connection string = " + connectionString);
 
             services.AddDbContext<CatalogContext>(opt =>
                 // opt.UseSqlServer(Configuration["ConnectionString"])
