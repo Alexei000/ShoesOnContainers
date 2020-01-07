@@ -12,12 +12,14 @@ namespace TokenServiceApi
         public static Dictionary<string, string> GetUrls(IConfiguration configuration)
         {
             string mvcClient = configuration.GetValue<string>("MvcClient");
+            string basketApiClient = configuration.GetValue<string>("BasketApiClient");
             Console.WriteLine("MvcClient configuration value " + mvcClient);
+            Console.WriteLine("BasketApi configuration value " + basketApiClient);
 
             Dictionary<string, string> urls = new Dictionary<string, string>();
             urls.Add("Mvc", mvcClient);
+            urls.Add("BasketApi", basketApiClient);
             return urls;
-
         }
 
         public static IEnumerable<ApiResource> GetApiResources()
@@ -63,9 +65,22 @@ namespace TokenServiceApi
                       //  IdentityServerConstants.StandardScopes.Email,
                         "orders",
                         "basket",
-
                     }
+                },
+                new Client
+                {
+                    ClientId = "basketswaggerui",
+                    ClientName = "Basket Swagger UI",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
 
+                    RedirectUris = { $"{clientUrls["BasketApi"]}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{clientUrls["BasketApi"]}/swagger/" },
+
+                    AllowedScopes = new List<string>
+                    {
+                        "basket"
+                    }
                 }
             };
         }
