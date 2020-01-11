@@ -1,8 +1,29 @@
-﻿namespace ShoesOnContainers.Web.WebMvc
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ShoesOnContainers.Web.WebMvc.Infrastructure
 {
     public class ApiPaths
     {
+        public static class Basket
+        {
+            public static string GetBasket(string baseUri, string basketId)
+            {
+                return $"{baseUri}/{basketId}";
+            }
 
+            public static string UpdateBasket(string baseUri)
+            {
+                return baseUri;
+            }
+
+            public static string CleanBasket(string baseUri, string basketId)
+            {
+                return $"{baseUri}/{basketId}";
+            }
+        }
         public static class Catalog
         {
             public static string GetAllCatalogItems(string baseUri, int page, int take, int? brand, int? type)
@@ -11,8 +32,8 @@
 
                 if (brand.HasValue || type.HasValue)
                 {
-                    var brandQs = (brand.HasValue) ? brand.Value.ToString() : "";
-                    var typeQs = (type.HasValue) ? type.Value.ToString() : "";
+                    var brandQs = (brand.HasValue) ? brand.Value.ToString() : "null";
+                    var typeQs = (type.HasValue) ? type.Value.ToString() : "null";
                     filterQs = $"/type/{typeQs}/brand/{brandQs}";
                 }
 

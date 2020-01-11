@@ -4,6 +4,7 @@
     {
         public string CatalogUrl { get; set; } 
         public Logging Logging { get; set; }
+        public string CartUrl { get; set; }
     }
 
     public class Logging

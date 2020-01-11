@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using ShoesOnContainers.Web.WebMvc.Infrastructure;
 using ShoesOnContainers.Web.WebMvc.Services;
+using TokenServiceApi.Models;
 
 namespace ShoesOnContainers.Web.WebMvc
 {
@@ -30,10 +33,14 @@ namespace ShoesOnContainers.Web.WebMvc
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<AppSettings>(Configuration);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // custom services
             services.AddScoped<IHttpClient, CustomHttpClient>();
             services.AddScoped<ICatalogService, CatalogService>();
+
+            services.AddTransient<IIdentityService<ApplicationUser>, IdentityService>();
+            services.AddTransient<ICartService, CartService>();
 
             var identityUrl = Configuration.GetValue<string>("IdentityUrl");
             var callBackUrl = Configuration.GetValue<string>("CallBackUrl");

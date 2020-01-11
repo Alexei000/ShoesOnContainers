@@ -14,6 +14,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=ContainerDev
       - CatalogUrl=http://catalog
       - IdentityUrl=http://10.0.75.2:5600
+      - CartUrl=http://cart
     container_name: webfront
     ports:
       - "5500:80"
@@ -22,6 +23,7 @@ services:
     depends_on:
       - catalog
       - tokenserver
+      - cart
  
   catalog:
     build:
