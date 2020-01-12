@@ -78,6 +78,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=ContainerDev
       - MvcClient=http://localhost:5500
+      - BasketApiClient=http://localhost:5700
+      - OrderApiClient=http://localhost:5800
     container_name: tokenserviceapi
     ports:
       - "5600:80"

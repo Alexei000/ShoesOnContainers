@@ -13,12 +13,15 @@ namespace TokenServiceApi
         {
             string mvcClient = configuration.GetValue<string>("MvcClient");
             string basketApiClient = configuration.GetValue<string>("BasketApiClient");
+            string orderApiClient = configuration.GetValue<string>("OrderApiClient");
             Console.WriteLine("MvcClient configuration value " + mvcClient);
             Console.WriteLine("BasketApi configuration value " + basketApiClient);
+            Console.WriteLine("OrderApi configuration value " + orderApiClient);
 
             Dictionary<string, string> urls = new Dictionary<string, string>();
             urls.Add("Mvc", mvcClient);
             urls.Add("BasketApi", basketApiClient);
+            urls.Add("OrderApi", orderApiClient);
             return urls;
         }
 
@@ -27,7 +30,7 @@ namespace TokenServiceApi
             return new List<ApiResource>
             {
                 new ApiResource("basket", "Shopping Cart Api"),
-                new ApiResource("orders", "Ordering Api"),
+                new ApiResource("order", "Ordering Api"),
             };
         }
 
@@ -80,6 +83,21 @@ namespace TokenServiceApi
                     AllowedScopes = new List<string>
                     {
                         "basket"
+                    }
+                },
+                new Client
+                {
+                    ClientId = "orderswaggerui",
+                    ClientName = "Order Swagger UI",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    RedirectUris = { $"{clientUrls["OrderApi"]}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{clientUrls["OrderApi"]}/swagger/" },
+
+                    AllowedScopes = new List<string>
+                    {
+                        "order"
                     }
                 }
             };
