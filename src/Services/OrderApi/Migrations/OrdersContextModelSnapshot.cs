@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShoesOnContainers.Services.OrderApi.Data;
 
-namespace ShoesOnContainers.Services.OrderApi.Data.Migrations
+namespace OrderApi.Migrations
 {
     [DbContext(typeof(OrdersContext))]
     partial class OrdersContextModelSnapshot : ModelSnapshot
@@ -24,6 +24,9 @@ namespace ShoesOnContainers.Services.OrderApi.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("BuyerId")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("FirstName")

@@ -1,9 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
 
-namespace ShoesOnContainers.Services.OrderApi.Data.Migrations
+namespace OrderApi.Migrations
 {
     public partial class Initial : Migration
     {
@@ -13,16 +12,17 @@ namespace ShoesOnContainers.Services.OrderApi.Data.Migrations
                 name: "Orders",
                 columns: table => new
                 {
-                    OrderId = table.Column<int>(type: "int", nullable: false)
+                    OrderId = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Address = table.Column<string>(type: "longtext", nullable: true),
-                    FirstName = table.Column<string>(type: "longtext", nullable: true),
-                    LastName = table.Column<string>(type: "longtext", nullable: true),
-                    OrderDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    OrderStatus = table.Column<int>(type: "int", nullable: false),
-                    OrderTotal = table.Column<decimal>(type: "decimal(65, 30)", nullable: false),
-                    PaymentAuthCode = table.Column<string>(type: "longtext", nullable: true),
-                    UserName = table.Column<string>(type: "longtext", nullable: true)
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
+                    OrderDate = table.Column<DateTime>(nullable: false),
+                    BuyerId = table.Column<string>(nullable: true),
+                    UserName = table.Column<string>(nullable: true),
+                    OrderStatus = table.Column<int>(nullable: false),
+                    Address = table.Column<string>(nullable: true),
+                    PaymentAuthCode = table.Column<string>(nullable: true),
+                    OrderTotal = table.Column<decimal>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -33,14 +33,14 @@ namespace ShoesOnContainers.Services.OrderApi.Data.Migrations
                 name: "OrderItems",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    OrderId = table.Column<int>(type: "int", nullable: false),
-                    PictureUrl = table.Column<string>(type: "longtext", nullable: true),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    ProductName = table.Column<string>(type: "longtext", nullable: true),
-                    UnitPrice = table.Column<decimal>(type: "decimal(65, 30)", nullable: false),
-                    Units = table.Column<int>(type: "int", nullable: false)
+                    ProductName = table.Column<string>(nullable: true),
+                    PictureUrl = table.Column<string>(nullable: true),
+                    UnitPrice = table.Column<decimal>(nullable: false),
+                    Units = table.Column<int>(nullable: false),
+                    ProductId = table.Column<int>(nullable: false),
+                    OrderId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

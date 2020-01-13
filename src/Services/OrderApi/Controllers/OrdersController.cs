@@ -12,40 +12,42 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using System.Security.Principal;
 using System.Security.Claims;
+using MassTransit;
+using OrderApi.Messaging;
 
 namespace ShoesOnContainers.Services.OrderApi.Controllers
 {
     [Route("api/v1/[controller]")]
     [Authorize]
-     
+
     public class OrdersController : Controller
     {
 
         private readonly OrdersContext _ordersContext;
-      private readonly IOptionsSnapshot<OrderSettings> _settings;
-
+        private readonly IOptionsSnapshot<OrderSettings> _settings;
+        private IBus _bus;
 
         private readonly ILogger<OrdersController> _logger;
-       
-        public OrdersController(OrdersContext ordersContext, ILogger<OrdersController> logger, IOptionsSnapshot<OrderSettings> settings)
+
+        public OrdersController(OrdersContext ordersContext, ILogger<OrdersController> logger,
+            IOptionsSnapshot<OrderSettings> settings, IBus bus)
         {
             _settings = settings;
-           // _ordersContext = ordersContext;
+            _bus = bus;
+            // _ordersContext = ordersContext;
             _ordersContext = ordersContext ?? throw new ArgumentNullException(nameof(ordersContext));
-          
-            ((DbContext)ordersContext).ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
-         
+            ((DbContext) ordersContext).ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+
             _logger = logger;
         }
-
-
 
         // POST api/Order
         [Route("new")]
         [HttpPost]
-        [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.Accepted)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CreateOrder([FromBody] Order order)
         {
             var envs = Environment.GetEnvironmentVariables();
@@ -56,7 +58,7 @@ namespace ShoesOnContainers.Services.OrderApi.Controllers
             order.OrderDate = DateTime.UtcNow;
 
             _logger.LogInformation(" In Create Order");
-            _logger.LogInformation(" Order" +order.UserName);
+            _logger.LogInformation(" Order" + order.UserName);
 
 
             _ordersContext.Orders.Add(order);
@@ -66,48 +68,49 @@ namespace ShoesOnContainers.Services.OrderApi.Controllers
             _logger.LogInformation(" Saving........");
             try
             {
-               await _ordersContext.SaveChangesAsync();
-                return CreatedAtRoute("GetOrder", new { id = order.OrderId },order);
+                await _ordersContext.SaveChangesAsync();
+                await _bus.Publish<OrderCompletedEvent>(order.BuyerId);
+                return CreatedAtRoute("GetOrder", new {id = order.OrderId}, order);
             }
-           catch(DbUpdateException ex)
+            catch (DbUpdateException ex)
             {
                 _logger.LogError("An error occored during Order saving .." + ex.Message);
                 return BadRequest();
             }
-           
+
 
         }
 
         [HttpGet("{id}", Name = "GetOrder")]
         //  [Route("{id}")]
-        [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.Accepted)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetOrder(int id)
         {
-           
+
             var item = await _ordersContext.Orders
-                .Include(x=>x.OrderItems)
-                .SingleOrDefaultAsync(ci => ci.OrderId==id);
+                .Include(x => x.OrderItems)
+                .SingleOrDefaultAsync(ci => ci.OrderId == id);
             if (item != null)
             {
                 return Ok(item);
             }
 
             return NotFound();
- 
+
         }
 
-        
+
 
         [Route("")]
         [HttpGet]
-        [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.Accepted)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetOrders()
         {
             var orders = await _ordersContext.Orders.ToListAsync();
 
-           // var orders = await orderTask;
+            // var orders = await orderTask;
 
             return Ok(orders);
         }
@@ -121,8 +124,8 @@ namespace ShoesOnContainers.Services.OrderApi.Controllers
         //    _caller.Claims.Select(
         //        c => new { c.Type, c.Value });
 
-           
-             
+
+
         //    var items = await _ordersContext.Orders
         //        .Where(ci => ci.UserName.Equals(userName))
         //        .Include(x => x.OrderItems)
@@ -131,8 +134,8 @@ namespace ShoesOnContainers.Services.OrderApi.Controllers
         //    {
         //        return Ok(items);
         //    }
-           
-             
+
+
         //    return NotFound();
 
         //}

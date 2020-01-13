@@ -20,10 +20,15 @@ using ShoesOnContainers.Services.OrderApi.Infrastructure.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using RabbitMQ.Client;
 using ShoesOnContainers.Services.OrderApi;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -100,7 +105,6 @@ namespace OrderApi
             //    options.OperationFilter<AuthorizeCheckOperationFilter>();
             //});
 
-
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -109,6 +113,26 @@ namespace OrderApi
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.Register(c =>
+            {
+                return Bus.Factory.CreateUsingRabbitMq(rmq =>
+                {
+                    rmq.Host(new Uri("rabbitmq://rabbitmq"), "/", host =>
+                    {
+                        host.Username("guest");
+                        host.Password("guest");
+                    });
+                    rmq.ExchangeType = ExchangeType.Fanout;
+                });
+            })
+            .As<IBusControl>()
+            .As<IBus>()
+            .As<IPublishEndpoint>()
+            .SingleInstance();
         }
 
         private void ConfigureAuthService(IServiceCollection services)
@@ -154,7 +178,7 @@ namespace OrderApi
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
         {
             if (env.IsDevelopment())
             {
@@ -171,7 +195,7 @@ namespace OrderApi
             app.UseCors("CorsPolicy");
 
             app.UseRouting();
-            app.UseAuthorization();
+            // app.UseAuthorization();
 
             app.UseAuthentication();
 
@@ -191,6 +215,13 @@ namespace OrderApi
             //        };
             //    });
 
+
+            var root = app.ApplicationServices.GetAutofacRoot();
+            var bus = root.Resolve<IBusControl>();
+            bus.Start(TimeSpan.FromSeconds(30));
+            bus.StartAsync();
+
+            lifetime.ApplicationStopping.Register(() => bus.Stop());
         }
     }
 }

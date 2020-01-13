@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShoesOnContainers.Services.OrderApi.Data;
 
-namespace OrderApi.Data.Migrations
+namespace OrderApi.Migrations
 {
     [DbContext(typeof(OrdersContext))]
-    [Migration("20200111092707_DummyMigration")]
-    partial class DummyMigration
+    [Migration("20200112083259_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,6 +26,9 @@ namespace OrderApi.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("BuyerId")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("FirstName")

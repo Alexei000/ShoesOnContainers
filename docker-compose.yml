@@ -70,6 +70,19 @@ services:
     networks:
       - backend
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: myrabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+      - "5671:5671"
+    volumes:
+      - ~/rabbitmq:/var/lib/rabbitmq/mnesia
+    networks:
+      - backend
+
   tokenserver:
     build:
       context: .\src\Services\TokenServiceApi
@@ -89,6 +102,7 @@ services:
       - frontend
     depends_on:
       - mssqlserver
+      - rabbitmq
 
   mssqlserver:
     image: "mcr.microsoft.com/mssql/server:2019-latest"
